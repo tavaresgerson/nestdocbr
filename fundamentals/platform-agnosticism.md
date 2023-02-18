@@ -1,0 +1,1 @@
+# Agnosticismo da plataforma
