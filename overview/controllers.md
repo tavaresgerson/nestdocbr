@@ -182,7 +182,7 @@ Para redirecionar uma resposta para um URL específico, você pode usar um decor
 
 Às vezes, convém determinar o código de status HTTP ou o URL de redirecionamento dinamicamente. Faça isso retornando um objeto do método de manipulador de rota com a forma:
 
-```json
+```
 {
   "url": string,
   "statusCode": number
@@ -200,4 +200,93 @@ getDocs(@Query('version') version) {
   }
 }
 ```
+
+## Parâmetros de rota
+Rotas com caminhos estáticos não funcionarão quando você precisar aceitar dados dinâmicos como parte da solicitação (por exemplo `GET /cats/1` para obter cat com id `1`). Para definir rotas com parâmetros, podemos adicionar parâmetros de rota como **tokens** no caminho da rota para capturar o valor dinâmico nessa posição no URL da solicitação. O parâmetro de _token_ no decorador `@Get()` será exemplificado abaixo. Os parâmetros de rota declarados dessa maneira podem ser acessados usando o decorador `@Param()`, que deve ser adicionado à assinatura do método.
+
+> **DICA**
+> Rotas com parâmetros devem ser declaradas após quaisquer caminhos estáticos. Isso impede que os caminhos parametrizados interceptem o tráfego destinado aos caminhos estáticos.
+
+```ts
+@Get(':id')
+findOne(@Param() params): string {
+  console.log(params.id);
+  return `This action returns a #${params.id} cat`;
+}
+```
+
+`@Param()` é usado para decorar um parâmetro de método (`params` no exemplo acima), e faz os parâmetros da rota disponíveis como propriedades desse método decorado dentro do corpo do método. Como visto no código acima, podemos acessar o parâmetro `id` referenciando `params.id`. Você também pode passar um parâmetro específico para o decorador e, em seguida, fazer referência ao parâmetro route diretamente pelo nome no corpo do método.
+
+> **DICA**
+> Importe `Param` do pacote `@nestjs/common`.
+
+```ts
+@Get(':id')
+findOne(@Param('id') id: string): string {
+  return `This action returns a #${id} cat`;
+}
+```
+
+## Roteamento de sub-domínio
+O decorador `@Controller` pode levar uma opção `host` para exigir que o host HTTP das solicitações recebidas corresponda a algum valor específico.
+
+```ts
+@Controller({ host: 'admin.example.com' })
+export class AdminController {
+  @Get()
+  index(): string {
+    return 'Admin page';
+  }
+}
+```
+
+> **AVISO**
+> Fastify não possui suporte para roteadores aninhados; ao usar o roteamento de subdomínio, o adaptador do Express padrão deve ser usado.
+
+Semelhante a um caminho de rota, A opção `hosts` pode usar tokens para capturar o valor dinâmico nessa posição no nome do host. O parâmetro com token no `@Controller()` será exemplificado abaixo. Os parâmetros do host declarados dessa maneira podem ser acessados usando o decorador `@HostParam()`, que deve ser adicionado à assinatura do método.
+
+```ts
+@Controller({ host: ':account.example.com' })
+export class AccountController {
+  @Get()
+  getInfo(@HostParam('account') account: string) {
+    return account;
+  }
+}
+```
+
+## Escopos
+Para pessoas provenientes de diferentes contextos de linguagem de programação, pode ser inesperado saber que, no Nest, quase tudo é compartilhado entre as solicitações recebidas. Temos um pool de conexões com o banco de dados, serviços singleton com estado global etc. Lembre-se de que o Node.js não segue o modelo sem estado multiencadeado de solicitação/resposta no qual cada solicitação é processada por um encadeamento separado. Portanto, o uso de instâncias singleton é totalmente seguro para nossas aplicações.
+
+No entanto, existem casos de borda quando a vida útil do controlador baseada em solicitação pode ser o comportamento desejado, por exemplo, cache por solicitação em aplicativos GraphQL, rastreamento de solicitação ou multitenização. Aprenda a controlar escopos [aqui](/fundamentals/injection-scopes.md).
+
+## Asincronicidade
+Adoramos o JavaScript moderno e sabemos que a extração de dados é principalmente assíncrono. É por isso que o Nest suporta e funciona bem com funções `async`.
+
+> **DICA**
+> Saiba mais sobre async/await [aqui](https://kamilmysliwiec.com/typescript-2-1-introduction-async-await)
+
+Toda função async precisa retornar um `Promise`. Isso significa que você pode retornar um valor diferido que a Nest poderá resolver sozinha. Vamos ver um exemplo disso:
+
+```ts
+// cats.controller.ts
+
+@Get()
+async findAll(): Promise<any[]> {
+  return [];
+}
+```
+
+O código acima é totalmente válido. Além disso, os manipuladores de rota Nest são ainda mais poderosos ao poder retornar o RxJS [streams observáveis](http://reactivex.io/rxjs/class/es6/Observable.js~Observable.html). O Nest se inscreve automaticamente na fonte abaixo e assume o último valor emitido (depois que o stream for concluído).
+
+```ts
+// cats.controller.ts
+
+@Get()
+findAll(): Observable<any[]> {
+  return of([]);
+}
+```
+
+Ambas as abordagens acima funcionam e você pode usar o que for adequado às suas necessidades.
 
