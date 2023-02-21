@@ -290,3 +290,19 @@ findAll(): Observable<any[]> {
 
 Ambas as abordagens acima funcionam e você pode usar o que for adequado às suas necessidades.
 
+## Payloads
+Nosso exemplo anterior do manipulador de rotas POST não aceitou nenhum parâmetro do cliente. Vamos corrigir isso adicionando o decorador `@Body()` aqui.
+
+Mas primeiro (se você usa TypeScript), precisamos determinar o esquema DTO (Objeto de transferência de dados). Um DTO é um objeto que define como os dados serão enviados pela rede. Poderíamos determinar o esquema DTO usando interfaces TypeScript ou por classes simples. Curiosamente, recomendamos o uso de classes aqui. Por quê? As classes fazem parte do padrão JavaScript ES6 e, portanto, são preservadas como entidades reais no JavaScript compilado. Por outro lado, como as interfaces TypeScript são removidas durante a transpilação, o Nest não pode se referir a elas em tempo de execução. Isso é importante porque recursos como Pipes tem possibilidades adicionais quando tiverem acesso ao metatipo da variável em tempo de execução.
+
+Vamos criar a classe `CreateCatDto`:
+
+```ts
+// create-cat.dto.ts
+
+export class CreateCatDto {
+  name: string;
+  age: number;
+  breed: string;
+}
+```
