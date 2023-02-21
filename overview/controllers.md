@@ -306,3 +306,116 @@ export class CreateCatDto {
   breed: string;
 }
 ```
+
+Possui apenas três propriedades básicas. Posteriormente, podemos usar o DTO recém-criado dentro do `CatsController`:
+
+```ts
+// cats.controller.ts
+
+@Post()
+async create(@Body() createCatDto: CreateCatDto) {
+  return 'This action adds a new cat';
+}
+```
+
+> **DICA**
+> Nosso `ValidationPipe` pode filtrar propriedades que não devem ser recebidas pelo manipulador de métodos. Nesse caso, podemos sanitizar as propriedades aceitáveis e qualquer propriedade não incluída na lista de permissões é automaticamente retirada do objeto resultante. No exemplo `CreateCatDto`, nossa lista de permissões de propriedades é a `name`, `age`, e `breed`. Saiba mais [aqui](/techniques/validation.md).
+
+## Manipulando erros
+Há um capítulo separado sobre como lidar com erros (ou seja, trabalhar com exceções) [aqui](/overview/exception-filters.md).
+
+## Amostra completa de recursos
+Abaixo está um exemplo que utiliza vários decoradores disponíveis para criar um controlador básico. Este controlador expõe alguns métodos para acessar e manipular dados internos.
+
+```ts
+// cats.controller.ts
+
+import { Controller, Get, Query, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { CreateCatDto, UpdateCatDto, ListAllEntities } from './dto';
+
+@Controller('cats')
+export class CatsController {
+  @Post()
+  create(@Body() createCatDto: CreateCatDto) {
+    return 'This action adds a new cat';
+  }
+
+  @Get()
+  findAll(@Query() query: ListAllEntities) {
+    return `This action returns all cats (limit: ${query.limit} items)`;
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return `This action returns a #${id} cat`;
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    return `This action updates a #${id} cat`;
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return `This action removes a #${id} cat`;
+  }
+}
+```
+
+> **DICA**
+> Nest CLI fornece um gerador (esquemático ) que gera automaticamente **todo o código do boilerplate** para nos ajudar a evitar fazer tudo isso e tornar a experiência do desenvolvedor muito mais simples. Leia mais sobre esse recurso [aqui](/recipes/crud-generator).
+
+
+## Levantando-se e correndo
+Com o controlador acima totalmente definido, Nest ainda não sabe que `CatsController` existe e, como resultado, não criará uma instância dessa classe.
+
+Os controladores sempre pertencem a um módulo, razão pela qual incluímos o controllers matriz dentro do decorador `@Module()`. Como ainda não definimos outros módulos, exceto a raiz `AppModule`, vamos usar isso para apresentar o `CatsController`:
+
+```ts
+// app.module.ts
+
+import { Module } from '@nestjs/common';
+import { CatsController } from './cats/cats.controller';
+
+@Module({
+  controllers: [CatsController],
+})
+export class AppModule {}
+```
+
+Anexamos os metadados à classe do módulo usando o decorador `@Module()` e agora o Nest pode refletir facilmente quais controladores devem ser montados.
+
+## Abordagem específica da biblioteca
+Até agora, discutimos a maneira padrão do Nest de manipular respostas. A segunda maneira de manipular a resposta é usar uma biblioteca específica e manipular suas propriedades. Para injetar um objeto de resposta específico, precisamos usar o decorador `@Res()`. Para mostrar as diferenças, vamos reescrever o `CatsController` para o seguinte:
+
+```ts
+import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Post()
+  create(@Res() res: Response) {
+    res.status(HttpStatus.CREATED).send();
+  }
+
+  @Get()
+  findAll(@Res() res: Response) {
+     res.status(HttpStatus.OK).json([]);
+  }
+}
+```
+
+Embora essa abordagem funcione e, de fato, permita mais flexibilidade de alguma maneira, fornecendo controle total do objeto de resposta (manipulação de cabeçalhos, recursos específicos de bibliotecas e assim por diante), deve ser usado com cuidado. Em geral, a abordagem é muito menos clara e tem algumas desvantagens. A principal desvantagem é que seu código se torna dependente da plataforma (pois as bibliotecas subjacentes podem ter APIs diferentes no objeto de resposta) e, mais difícil de testar (você precisará _mockar_ o objeto de resposta, etc.).
+
+Além disso, no exemplo acima, você perde a compatibilidade com os recursos do Nest que dependem do manuseio de respostas padrão do Nest, como Interceptores e decoradores `@HttpCode()`/`@Header()`. Para corrigir isso, você pode definir a opção `passthrough` para `true`, do seguinte modo:
+
+```ts
+@Get()
+findAll(@Res({ passthrough: true }) res: Response) {
+  res.status(HttpStatus.OK);
+  return [];
+}
+```
+
+Agora você pode interagir com o objeto de resposta nativo (por exemplo, defina cookies ou cabeçalhos dependendo de determinadas condições), mas deixe o restante na estrutura.
