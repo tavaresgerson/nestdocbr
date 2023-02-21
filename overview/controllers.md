@@ -51,7 +51,7 @@ Esse método retornará um código de status 200 e a resposta associada, que nes
   <tr>
     <td>
       <b>Específico da biblioteca</b>
-    <td>
+    </td>
     <td>
       Podemos usar o (específico da biblioteca, por exemplo, Express) objeto de resposta, que pode ser injetado usando o decorador <code>@Res()</code> na assinatura do manipulador de métodos (por exemplo <code>findAll(@Res() response)</code>). Com essa abordagem, você pode usar os métodos nativos de tratamento de respostas expostos por esse objeto. No caso com o Express, você pode construir respostas usando código como <code>response.status(200).send()</code>.
     </td>
