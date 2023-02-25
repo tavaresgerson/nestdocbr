@@ -8,7 +8,7 @@ Tradução da documentação para português brasileiro do framework web NestJS
   + [Controllers](/overview/controllers.md)
   + [Providers](/overview/providers.md)
   + [Modules](/overview/modules.md)
-  + Middleware
+  + [Middleware](/overview/middleware.md)
   + Exception filters
   + Pipes
   + Guards
