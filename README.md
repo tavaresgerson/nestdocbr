@@ -5,9 +5,9 @@ Tradução da documentação para português brasileiro do framework web NestJS
 + **[Introdução](/introduction.md)**
 + **Visão Geral**
   + [Primeiros Passos](/overview/first-steps.md)
-  + Controllers
-  + Providers
-  + Modules
+  + [Controllers](/overview/controllers.md)
+  + [Providers](/overview/providers.md)
+  + [Modules](/overview/modules.md)
   + Middleware
   + Exception filters
   + Pipes
