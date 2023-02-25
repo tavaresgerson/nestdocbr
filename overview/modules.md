@@ -169,7 +169,7 @@ Este módulo define o provedor `Connection` por padrão (no metadados do decorad
 
 Se você deseja registrar um módulo dinâmico no escopo global, defina a propriedade `global` para `true`.
 
-```json
+```
 {
   global: true,
   module: DatabaseModule,
