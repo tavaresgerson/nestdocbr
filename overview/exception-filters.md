@@ -362,5 +362,5 @@ async function bootstrap() {
 bootstrap();
 ```
 
-O segundo método é usar o token `APP_FILTER` como mostrado [aqui](/overview/exception-filters.md).
+O segundo método é usar o token `APP_FILTER` como mostrado [aqui](/overview/exception-filters.md#filtros-de-ligação).
 
