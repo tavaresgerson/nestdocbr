@@ -10,7 +10,7 @@ Tradução da documentação para português brasileiro do framework web NestJS
   + [Módulos](/overview/modules.md)
   + [Middleware](/overview/middleware.md)
   + [Filtros de Exceção](/overview/exception-filters.md)
-  + Pipes
+  + [Pipes](/overview/pipes.md)
   + Guards
   + Interceptors
   + Custom decorators
