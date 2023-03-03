@@ -15,7 +15,7 @@ Tradução da documentação para português brasileiro do framework web NestJS
   + [Interceptores](/overview/interceptors.md)
   + [Decoradores Customizados](/overview/custom-decorators.md)
 + Fundamentals
-  + Custom providers
+  + [Provedores Customizados](/fundamentals/custom-providers.md)
   + Asynchronous providers
   + Dynamic modules
   + Injection scopes
