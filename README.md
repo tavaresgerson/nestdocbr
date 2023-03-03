@@ -13,7 +13,7 @@ Tradução da documentação para português brasileiro do framework web NestJS
   + [Pipes](/overview/pipes.md)
   + [Guardas](/overview/guards.md)
   + [Interceptores](/overview/interceptors.md)
-  + Custom decorators
+  + [Decoradores Customizados](/overview/custom-decorators.md)
 + Fundamentals
   + Custom providers
   + Asynchronous providers
