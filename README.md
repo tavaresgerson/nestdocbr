@@ -16,8 +16,8 @@ Tradução da documentação para português brasileiro do framework web NestJS
   + [Decoradores Customizados](/overview/custom-decorators.md)
 + Fundamentals
   + [Provedores Customizados](/fundamentals/custom-providers.md)
-  + Asynchronous providers
-  + Dynamic modules
+  + [Provedores Assíncronos](/fundamentals/async-providers.md)
+  + [Módulos Dinâmicos](fundamentals/dynamic-modules.md)
   + Injection scopes
   + Circular dependency
   + Module reference
